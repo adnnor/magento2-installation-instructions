@@ -42,6 +42,8 @@ If you are encounter with `Config variable ${xxx} is not defined` error, it is b
 - `sudo a2enmod setenvif` - Enables Environment Variable based on condition.
 - `sudo a2enmod version` - Enables Version module.
 
+> If you get an error `ERROR: Module version does not exist!` and `apachectl -M | grep version` outputs `version_module (static)` then its mean mod_version is statically compiled into apache2 package and works automatically.
+
 One more thing, modify Apache defafult configuration so it allow .htaccess to override default settings, otherwise .htaccess under `DocumentRoot` will not work, `sudo nano /etc/apache2/apache2.conf` and search for the following block;
 ```bash
 <Directory /var/www/>
