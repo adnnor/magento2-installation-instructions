@@ -1,6 +1,23 @@
 > **DISCLAIMER:**
 > These instructions are made available for learning purposes only as well as give you general information of Magento 2.3 environment setup and installation, I endeavor to provide accurate and timely information, there can be no guarantee that such information is accurate as of the date it is received or that it will continue to be accurate in the future. No one shall act on such information without appropriate professional advice after a thorough examination of the particular situation or circumstances, by following these instructions you also understand that any kind of naming convention or label is used as an example only and owner of this information will not be responsible of any data lose or whatsoever.
 
+## Good news!!
+> ... and it must come first, I have created a Bash script for **Ubuntu 18.04 LTS (Bionic Beaver)** to setup complete environment for Magento 2.3, it is offered as BETA and you can use it as-it-is at your own risk.
+
+**Usage**
+Clone this repo and execute `sudo bash setup.sh -u johndoe`, it will take sometime and you are done. The script offers;
+
+> **Note**: DO NOT modify the script until you know what you are doing.
+
+**Forking and Suggestions are welcomed** 
+
+- Apache installation and configuration
+- VirtualHost (local.mage23.com)
+- MariaDB 10.3
+- PHP 7.2 with required dependencies
+
+**Note** This script is tested under the clean installation of Ubuntu 18.04 LTS (Bionic Beaver).
+
 # Magento 2.3 Environment Setup & Installation
 
 Instructions to setup the environment and install Magento 2.3 under Ubuntu 16.04 LTS and 18.04 LTS.
