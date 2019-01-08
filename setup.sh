@@ -96,20 +96,6 @@ strpos()
 }
 # END BR0kEN- credit
 
-
-# abort()
-# {
-#     echo >&2 '
-# ***************
-# *** ABORTED ***
-# ***************
-# '
-#     echo "An error occurred. Exiting..." >&2
-#     exit 1
-# }
-
-
-rm .log
 log() {
     
     local arg1=${1}
