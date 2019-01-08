@@ -4,8 +4,7 @@
 ## Good news!!
 > ... and it must come first, I have created a Bash script for **Ubuntu 18.04 LTS (Bionic Beaver)** to setup complete environment for Magento 2.3, it is offered as BETA and you can use it as-it-is at your own risk.
 
-**Usage**
-Clone this repo and execute `sudo bash setup.sh -u johndoe`, it will take sometime and you are done. The script offers;
+Clone the repo and execute `sudo bash setup.sh -u johndoe` where `johndoe` is your username, it will take sometime and you are done. The script offers;
 
 - Apache installation and configuration
 - VirtualHost (local.mage23.com)
