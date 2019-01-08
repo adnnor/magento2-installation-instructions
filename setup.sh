@@ -6,6 +6,8 @@
 # Bugs
 # 1. DocumentRoot missing public_html
 # 2. VHOST has fpm entry with no fpm installation
+# 3. Show default username and password for database.
+# 4. Show complete details of configuration at the end of the script execution also save in .log
 
 
 DUB="/var/www"
