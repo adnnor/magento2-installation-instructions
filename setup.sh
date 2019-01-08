@@ -1,14 +1,15 @@
 #!/bin/bash
-# Came from https://github.com/adnnor/virtualhost-generator
+# Came from https://github.com/adnnor/magento2.3-setup
 # @author: Adnan Shahzad
 # @Email: adnnor@gmail.com
 
-# Bugs
-# 1. DocumentRoot missing public_html
-# 2. VHOST has fpm entry with no fpm installation
-# 3. Show default username and password for database.
-# 4. Show complete details of configuration at the end of the script execution also save in .log
-
+# TODO
+# 1. PHP FPM
+# 2. Composer
+# 3. n98-magerun2
+# 4. SendMail
+# 5. VirtualHost param
+# 6. PHP version param
 
 DUB="/var/www"
 DIR="mage23"
@@ -21,6 +22,8 @@ FPM_HOST="127.0.0.1"
 FPM_PORT="9000"
 IP="127.0.0.1"
 SAMPLE_CONF="conf.conf"
+LOG_FILE=".log"
+OUTPUT=""
 
 RESTORE=$(echo -en '\033[0m')
 RED=$(echo -en '\033[00;31m')
@@ -41,11 +44,9 @@ if [[ -z $2 ]]; then
 	exit 1
 fi
 CURRENT_USER=${2}
-# SUDO=`sudo lsb_release -rs  2>&1`
 
 # Thanks to BR0kEN-/string_functions.sh for substr and strpos functions
 # URL: https://gist.github.com/BR0kEN-/a84b18717f8c67ece6f7
-
 # @param string $1
 #   Input string.
 # @param int $2
@@ -96,16 +97,17 @@ strpos()
 }
 # END BR0kEN- credit
 
+
 log() {
-    
+
     local arg1=${1}
     local arg2=${2}
-
+	
 	if [[ $# -eq 2 ]] && [[ ! -z "$1" ]] && [[ ! -z "$2" ]]; then
-		printf "$arg1" "$arg2" | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g" &>> .log
+		printf "$arg1" "$arg2" | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g" &>> "${LOG_FILE}"
 		printf "$arg1" "$arg2" 2>&1
 	elif [[ $# -eq 1 ]] && [[ ! -z "$1" ]]; then
-		printf "$arg1" | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g" &>> .log
+		printf "$arg1" | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g" &>> "${LOG_FILE}"
 		printf "$arg1" 2>&1
 	else
 		echo "error"
@@ -114,10 +116,10 @@ log() {
 
 abort() {
 	log "${LRED}ERROR!${RESTORE}\n"
-	printf '======\n' &>> .log
-	printf '%s\n' "$1" &>> .log
-	printf '======\n' &>> .log
-	printf "\n\n${ABORT} Execution Interrupted ${RESTORE} Check .log for the error details ...\n\n"
+	printf '======\n' &>> "${LOG_FILE}"
+	printf '%s\n' "$1" &>> "${LOG_FILE}"
+	printf '======\n' &>> "${LOG_FILE}"
+	printf "\n\n${ABORT} Execution Interrupted ${RESTORE} Check ${LOG_FILE} for the error details ...\n\n"
 	exit 1
 }
 
@@ -225,7 +227,10 @@ fi
 log "Creating required directories ... "
 MAKE_DIR=`mkdir -p "$DocumentRoot/public_html" && mkdir -p "$DocumentRoot/backup" 2>&1`
 if [ $? -eq 0 ]; then
-	sudo chown "$CURRENT_USER" -R "$DocumentRoot" 
+	sudo chown "$CURRENT_USER" -R "$DocumentRoot"
+	OUTPUT="${OUTPUT}\nDirectory created: ${GREEN}$DocumentRoot${RESTORE}\n" 
+	OUTPUT="${OUTPUT}Directory created: ${GREEN}$DocumentRoot/backup${RESTORE}\n" 
+	OUTPUT="${OUTPUT}DocumentRoot: ${GREEN}$DocumentRoot/pub${RESTORE}\n" 
 	log "${LGREEN}done!${RESTORE}\n"
 else
 	abort "$MAKE_DIR"
@@ -281,6 +286,7 @@ log "Taking backup of /etc/apache2/apache2.conf ... "
 CONF_BK=`cp /etc/apache2/apache2.conf ./ 2>&1`
 if [ $? -eq 0 ]; then
 	log "${LGREEN}done!${RESTORE}\n"
+	OUTPUT="${OUTPUT}VirtualHost: ${GREEN}http://$ServerName/${RESTORE}\n"
 else
 	abort "$CONF_BK"
 fi
@@ -348,6 +354,7 @@ else
 		MYSQL_INSTALL=`sudo apt-get install -y mariadb-server 2>&1`
 		if [ $? -eq 0 ]; then
 			log "${LGREEN}done! \m/${RESTORE}\n"
+			OUTPUT="${OUTPUT}MariaDB 10.3 Root Password: ${GREEN}123abc${RESTORE}/\n"
 		else
 			abort "$MYSQL_INSTALL"
 		fi
@@ -373,15 +380,13 @@ install_php() {
 	fi
 }
 
-# # php7.2-simplexml
-# # php7.2-dom
 extensions=(libapache2-mod-php7.2 php7.2 php7.2-bcmath php7.2-common php7.2-curl php7.2-gd php7.2-intl \
 			php7.2-mbstring php7.2-mysql php7.2-soap php7.2-xml php7.2-xsl php7.2-zip php7.2-json)
 for i in "${extensions[@]}"; do
 	install_php "$i"
 done
 
-
+log "${OUTPUT}"
 
 
 printf "\n"
