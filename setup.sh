@@ -299,25 +299,6 @@ else
 	abort "$CONF_BK"
 fi
 
-log "Appending lines to /etc/apache2/apache2.conf ... "
-CONF_APPEND=`sudo echo "
-<Directory /var/www/>
-	Options Indexes FollowSymLinks
-	AllowOverride All
-	Require all granted
-</Directory>
-" >> /etc/apache2/apache2.conf`
-if [ $? -eq 0 ]; then
-	log "${LGREEN}done!${RESTORE}\n"
-else
-	log "${LRED}ERROR!${RESTORE}\n"
-	printf '======\n' &>> .log
-	printf '%s\n' "$CONF_APPEND" &>> .log
-	printf '======\n' &>> .log
-	printf "\n\n${ABORT} Execution Interrupted ${RESTORE} Check .log for the error details ...\n\n"
-	exit 1
-fi
-
 log "Searching for MariaDB or MySQL ... "
 MARIA_SEARCH=$(dpkg -l | awk '$2 ~ /^mariadb$/ { print $3 }')
 MYSQL_SEARCH=$(dpkg -l | awk '$2 ~ /^mysql-server-5.7$/ { print $3 }')
