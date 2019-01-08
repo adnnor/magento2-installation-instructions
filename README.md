@@ -7,16 +7,14 @@
 **Usage**
 Clone this repo and execute `sudo bash setup.sh -u johndoe`, it will take sometime and you are done. The script offers;
 
-> **Note**: DO NOT modify the script until you know what you are doing.
-
-**Forking and Suggestions are welcomed** 
-
 - Apache installation and configuration
 - VirtualHost (local.mage23.com)
 - MariaDB 10.3
 - PHP 7.2 with required dependencies
 
-**Note** This script is tested under the clean installation of Ubuntu 18.04 LTS (Bionic Beaver).
+> **Note**: DO NOT modify the script until you know what you are doing.
+
+**Your suggestions and contributions are valuable.**
 
 # Magento 2.3 Environment Setup & Installation
 
