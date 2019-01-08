@@ -267,7 +267,7 @@ fi
 [ ! -z "${DocumentRoot}" ] && sed -i "s#!DocumentRoot!#${DocumentRoot}/pub#" $VHOST_FILE
 [ ! -z "${FPM_HOST}" ] && sed -i "s#!FPM_HOST!#${FPM_HOST}#" $VHOST_FILE
 [ ! -z "${FPM_PORT}" ] && sed -i "s#!FPM_PORT!#${FPM_PORT}#" $VHOST_FILE
-COPY_CONF=`sudo cp "${ServerName}.conf" /etc/apache2/sites-available/ 2>&1`
+COPY_CONF=`sudo mv "${ServerName}.conf" /etc/apache2/sites-available/ 2>&1`
 if [ ! $? -eq 0 ]; then
 	abort "$COPY_CONF"
 fi
