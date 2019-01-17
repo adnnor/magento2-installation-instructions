@@ -10,6 +10,7 @@ Clone the repo and execute `sudo bash setup.sh -u johndoe` where `johndoe` is yo
 - VirtualHost (local.mage23.com)
 - MariaDB 10.3
 - PHP 7.2 with required dependencies
+- PHP FPM
 
 > **Note**: DO NOT modify the script until you know what you are doing.
 
