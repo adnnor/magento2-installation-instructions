@@ -19,11 +19,14 @@ ServerAlias="local.$DIR.com"
 DocumentRoot="$DUB/$DIR/public_html"
 DocumentRoot_PUB="$DocumentRoot/pub"
 FPM_HOST="127.0.0.1"
-FPM_PORT="9000"
+FPM_PORT="7210"
 IP="127.0.0.1"
 SAMPLE_CONF="conf.conf"
+SAMPLE_POOL="sample.www.conf"
 LOG_FILE=".log"
 OUTPUT=""
+WWW_POOL="/etc/php/7.2/fpm/pool.d/www.conf"
+DATE_TIME=$(date '+%d%m%Y_%H%M%S');
 
 RESTORE=$(echo -en '\033[0m')
 RED=$(echo -en '\033[00;31m')
@@ -225,11 +228,11 @@ if [[ ! -z $DIR_USER ]] || [[ ! -z $DIR_GROUP ]]; then
 fi
 
 log "Creating required directories ... "
-MAKE_DIR=`mkdir -p "$DocumentRoot/public_html" && mkdir -p "$DocumentRoot/backup" 2>&1`
+MAKE_DIR=`mkdir -p "$DUB/$DIR/public_html" && mkdir -p "$DUB/$DIR/backups" 2>&1`
 if [ $? -eq 0 ]; then
-	sudo chown "$CURRENT_USER" -R "$DocumentRoot"
+	sudo chown "$CURRENT_USER" -R "$DUB/$DIR"
 	OUTPUT="${OUTPUT}\nDirectory created: ${GREEN}$DocumentRoot${RESTORE}\n" 
-	OUTPUT="${OUTPUT}Directory created: ${GREEN}$DocumentRoot/backup${RESTORE}\n" 
+	OUTPUT="${OUTPUT}Directory created: ${GREEN}$DocumentRoot/backups${RESTORE}\n" 
 	OUTPUT="${OUTPUT}DocumentRoot: ${GREEN}$DocumentRoot/pub${RESTORE}\n" 
 	log "${LGREEN}done!${RESTORE}\n"
 else
@@ -247,6 +250,7 @@ else
 fi
 
 log "Creating VirtualHost (${ServerName}) ... "
+OUTPUT="${OUTPUT}VirtualHost: ${GREEN}http://$ServerName/${RESTORE}\n"
 GENERATE_CONF=`cp "${SAMPLE_CONF}" "${VHOST_FILE}" 2>&1`
 if [ ! $? -eq 0 ]; then
 	abort "$GENERATE_CONF"
@@ -258,7 +262,7 @@ fi
 [ ! -z "${DocumentRoot}" ] && sed -i "s#!DocumentRoot!#${DocumentRoot}/pub#" $VHOST_FILE
 [ ! -z "${FPM_HOST}" ] && sed -i "s#!FPM_HOST!#${FPM_HOST}#" $VHOST_FILE
 [ ! -z "${FPM_PORT}" ] && sed -i "s#!FPM_PORT!#${FPM_PORT}#" $VHOST_FILE
-COPY_CONF=`sudo mv "${ServerName}.conf" /etc/apache2/sites-available/ 2>&1`
+COPY_CONF=`cp "${ServerName}.conf" /etc/apache2/sites-available/ 2>&1`
 if [ ! $? -eq 0 ]; then
 	abort "$COPY_CONF"
 fi
@@ -283,10 +287,14 @@ if [ $? -eq 0 ]; then
 fi
 
 log "Taking backup of /etc/apache2/apache2.conf ... "
-CONF_BK=`cp /etc/apache2/apache2.conf ./ 2>&1`
+CREATE_BACKUP_DIR=`mkdir -p ./backups 2>&1`
+if [ ! $? -eq 0 ]; then
+	abort "$CREATE_BACKUP_DIR"
+fi
+
+CONF_BK=`cp /etc/apache2/apache2.conf ./backups/apache2.conf.original."${DATE_TIME}" 2>&1`
 if [ $? -eq 0 ]; then
 	log "${LGREEN}done!${RESTORE}\n"
-	OUTPUT="${OUTPUT}VirtualHost: ${GREEN}http://$ServerName/${RESTORE}\n"
 else
 	abort "$CONF_BK"
 fi
@@ -354,7 +362,7 @@ else
 		MYSQL_INSTALL=`sudo apt-get install -y mariadb-server 2>&1`
 		if [ $? -eq 0 ]; then
 			log "${LGREEN}done! \m/${RESTORE}\n"
-			OUTPUT="${OUTPUT}MariaDB 10.3 Root Password: ${GREEN}123abc${RESTORE}/\n"
+			OUTPUT="${OUTPUT}MariaDB 10.3 Root Password: ${GREEN}123abc${RESTORE}\n"
 		else
 			abort "$MYSQL_INSTALL"
 		fi
@@ -386,7 +394,79 @@ for i in "${extensions[@]}"; do
 	install_php "$i"
 done
 
+log "Installing PHP-FPM and required mods (if any) ... "
+REQ_MOD_CONFIG=`sudo apt-get install libapache2-mod-fcgid && \
+				sudo apt-get install php7.2-fpm && \
+				sudo a2dismod php7.2 && sudo a2enmod proxy && sudo a2enmod proxy_fcgi && \
+				sudo a2enmod proxy_http && sudo a2enmod fcgid 2>&1`
+if [ $? -eq 0 ]; then
+	log "${LGREEN}done!${RESTORE}\n"
+else
+	abort "$REQ_MOD_DISABLE"
+fi
+
+log "Taking backup of $WWW_POOL ... "
+CONF_BK=`cp "${WWW_POOL}" ./backups/www.conf.original."${DATE_TIME}" 2>&1`
+if [ $? -eq 0 ]; then
+	log "${LGREEN}done!${RESTORE}\n"
+	OUTPUT="${OUTPUT}Config file backups (file.conf.original.[DATE_TIME]): ${GREEN}./backups${RESTORE}\n"
+else
+	abort "$CONF_BK"
+fi
+
+log "Configuring PHP-FPM ... "
+CREATE_DIR_PHP=`sudo mkdir -p /var/log/php7.2/ 2>&1`
+if [ ! $? -eq 0 ]; then
+	abort "$CREATE_DIR_PHP"
+fi
+OUTPUT="${OUTPUT}PHP logs directory: ${GREEN}/var/log/php7.2${RESTORE}\n"
+
+CHOWN_DIR_PHP=`sudo chown -R www-data:www-data /var/log/php7.2/ 2>&1`
+if [ ! $? -eq 0 ]; then
+	abort "$CHOWN_DIR_PHP"
+fi
+
+GENERATE_CONF=`cp "${SAMPLE_POOL}" "www.conf" 2>&1`
+if [ ! $? -eq 0 ]; then
+	abort "$GENERATE_CONF"
+fi
+
+[ ! -z "${CURRENT_USER}" ] && sed -i "s/!USER!/${CURRENT_USER}/" www.conf
+[ ! -z "${CURRENT_USER}" ] && sed -i "s/!GROUP!/${CURRENT_USER}/" www.conf
+[ ! -z "${FPM_HOST}" ] && sed -i "s#!FPM_HOST!#${FPM_HOST}#" www.conf
+[ ! -z "${FPM_PORT}" ] && sed -i "s#!FPM_PORT!#${FPM_PORT}#" www.conf
+COPY_WWW_POOL=`mv "www.conf" "${WWW_POOL}" 2>&1`
+if [ ! $? -eq 0 ]; then
+	abort "$COPY_WWW_POOL"
+fi
+OUTPUT="${OUTPUT}PHP-FPM pool file: ${GREEN}$WWW_POOL${RESTORE}\n"
+
+CHOWN_DIR_PHP=`sudo chown -R www-data:www-data /var/log/php7.2/ 2>&1`
+if [ ! $? -eq 0 ]; then
+	abort "$CHOWN_DIR_PHP"
+fi
+
+RESTART_FPM=`service php7.2-fpm restart 2>&1`
+if [ $? -eq 0 ]; then
+	log "${LGREEN}done!${RESTORE}\n"
+else
+	abort "$RESTART_FPM"
+fi
+
+log "Activating PHP-FPM for ${ServerName} ... "
+
+FPM_FOR_VH=`sed -i "s;##;;" $VHOST_FILE 2>&1`
+COPY_CONF=`mv "${ServerName}.conf" /etc/apache2/sites-available/ 2>&1`
+if [ ! $? -eq 0 ]; then
+	abort "$COPY_CONF"
+fi
+
+RESTART_APACHE=`service apache2 restart 2>&1`
+if [ $? -eq 0 ]; then
+	log "${LGREEN}done!${RESTORE}\n"
+else
+	abort "$RESTART_APACHE"
+fi
+
 log "${OUTPUT}"
-
-
 printf "\n"
