@@ -16,13 +16,13 @@ This bash script offers;
 > **Note**: DO NOT modify the script until you know what you are doing.
 
 **You can use this script,**
-> If you need a quick setup on clean installation of Ubuntu 18.04 LTS.
-> If you hate repeatitions or tired of setup the same environment over and over again.
+- If you need a quick setup on clean installation of Ubuntu 18.04 LTS.
+- If you hate repeatitions or tired of setup the same environment over and over again.
 
 **Don't use this,**
-> If you don't know the LAMP stack configuration.
-> If you are not certain about technologies/features this bash script provisions for you.
-> If you are new to LAMP stack configuration and love to learn, skip this and follow the instruction given below.
+- If you don't know the LAMP stack configuration.
+- If you are not certain about technologies/features this bash script provisions for you.
+- If you are new to LAMP stack configuration and love to learn, skip this and follow the instruction given below.
 
 **Your suggestions and contributions are valuable.**
 
