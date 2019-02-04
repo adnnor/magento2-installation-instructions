@@ -1,10 +1,11 @@
-> **DISCLAIMER:**
-> These instructions are made available for learning purposes only as well as give you general information of Magento 2.3 environment setup and installation, I endeavor to provide accurate and timely information, there can be no guarantee that such information is accurate as of the date it is received or that it will continue to be accurate in the future. No one shall act on such information without appropriate professional advice after a thorough examination of the particular situation or circumstances, by following these instructions you also understand that any kind of naming convention or label is used as an example only and owner of this information will not be responsible of any data lose or whatsoever.
+## Bash script
+> I am provisioning bash script (beta) for the clean installation of **Ubuntu 18.04 LTS (Bionic Beaver)** to setup complete environment for Magento 2.3.
 
-## Good news!!
-> ... and it must come first, I have created a Bash script for **Ubuntu 18.04 LTS (Bionic Beaver)** to setup complete environment for Magento 2.3, it is offered as BETA and you can use it as-it-is at your own risk.
+**Usage**
+Clone the repo and execute `sudo bash setup.sh -u johndoe` (`johndoe` is your username).
 
-Clone the repo and execute `sudo bash setup.sh -u johndoe` where `johndoe` is your username, it will take sometime and you are done. The script offers;
+**Features**
+This bash script offers;
 
 - Apache installation and configuration
 - VirtualHost (local.mage23.com)
@@ -13,6 +14,15 @@ Clone the repo and execute `sudo bash setup.sh -u johndoe` where `johndoe` is yo
 - PHP FPM
 
 > **Note**: DO NOT modify the script until you know what you are doing.
+
+**You can use this script,**
+> If you need a quick setup on clean installation of Ubuntu 18.04 LTS.
+> If you hate repeatitions or tired of setup the same environment over and over again.
+
+**Don't use this,**
+> If you don't know the LAMP stack configuration.
+> If you are not certain about technologies/features this bash script provisions for you.
+> If you are new to LAMP stack configuration and love to learn, skip this and follow the instruction given below.
 
 **Your suggestions and contributions are valuable.**
 
@@ -271,3 +281,6 @@ memory_limit = 2G
 max_execution_time = 18000
 display_errors = Off
 ```
+
+> **DISCLAIMER:**
+> These instructions are made available for learning purposes only as well as give you general information of Magento 2.3 environment setup and installation, I endeavor to provide accurate and timely information, there can be no guarantee that such information is accurate as of the date it is received or that it will continue to be accurate in the future. No one shall act on such information without appropriate professional advice after a thorough examination of the particular situation or circumstances, by following these instructions you also understand that any kind of naming convention or label is used as an example only and owner of this information will not be responsible of any data lose or whatsoever.
