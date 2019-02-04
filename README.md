@@ -1,10 +1,12 @@
 ## Bash script
-> I am provisioning bash script (beta) for the clean installation of **Ubuntu 18.04 LTS (Bionic Beaver)** to setup complete environment for Magento 2.3.
+I am provisioning bash script (beta) for the clean installation of **Ubuntu 18.04 LTS (Bionic Beaver)** to setup complete environment for Magento 2.3.
 
 **Usage**
+
 Clone the repo and execute `sudo bash setup.sh -u johndoe` (`johndoe` is your username).
 
 **Features**
+
 This bash script offers;
 
 - Apache installation and configuration
