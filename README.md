@@ -278,9 +278,23 @@ Enter Magento Marketplace Public Key as `Username` and Private Key as `Password`
 
 Once download is finished, rename `php.ini.sample` to `php.ini` and make sure that it contains following must-have configuration;
 
+After the previous step, either open recently created Virtual Host, in my case it is **local.mage23.com**, in the browser or you can use following command in the terminal (command line) to continue with the installation of the Magento 2 (make sure you are at magento root).
+
+```bash
+php bin/magento setup:install --base-url="http://local.mage23.com/" --db-host="localhost" --db-name="database-name" --db-user="database-username" --db-password="database-password" --admin-firstname="Your first name" --admin-lastname="Your last name" --admin-email="your-email@example.com" --admin-user="admin-username" --admin-password="admin-password" --language="en_US" --currency="USD" --timezone="America/Chicago" --use-rewrites="1" --backend-frontname="admin"
+```
+
+> **Note:** If you have changed your DocumentRoot to **pub** then everything will be good; now the case if, after the successful installation you changed your mind.
+
+- You changed your DocumentRoot to magento root i.e. removed the pub from the path: Alter your base url and put the trailing slash.
+- You changed your DocumentRoot to pub i.e. appended the DocumentRoot with pub: Alter your base url and remove the trailing slash.
+
+In both cases you have to clear/flush the cache.
+
+**Minimal recommended PHP settings for Magento 2**
 ```bash
 memory_limit = 2G
-max_execution_time = 18000
+max_execution_time = 900
 display_errors = Off
 ```
 
