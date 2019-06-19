@@ -274,7 +274,7 @@ cd /var/www/magento/public_html
 composer create-project --repository-url=https://repo.magento.com/ \
                         magento/project-community-edition:2.3.* .
 ```
-Enter Magento Marketplace Private Key as `Username` and Public Key as `Password`. It will take some time to download all depedences. 
+Enter Magento Marketplace Public Key as `Username` and Private Key as `Password`. It will take some time to download all depedences. 
 
 Once download is finished, rename `php.ini.sample` to `php.ini` and make sure that it contains following must-have configuration;
 
