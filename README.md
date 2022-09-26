@@ -2,10 +2,6 @@
 
 We are going to setup the AWS EC2 instance for Magento 2.4.5 using Ubuntu 22. These instruction includes the following features;
 
-Notes
-- This guide is created for learning purposes, its is not recommended for production servers.
-- Please help me to improve this guide.
-
 Make sure your EC2 instance has minimum 5GB of RAM and 3 CPUs
 
 ## Technology stack
@@ -24,7 +20,9 @@ Make sure your EC2 instance has minimum 5GB of RAM and 3 CPUs
 sudo apt install apache2
 ```
 
-Open your browser and enter `http://0.0.0.0/` you will see welcome page. Open your terminal (CTRL+ALT+T) and run `sudo chown $USER -R /var/www` it will change the ownership of `/var/www/` to `ubuntu` (its default username assigned to every Ubuntu instance) so you can create and modify files and directories under `/var/www/`.
+Open your browser and enter `http://0.0.0.0/` you will see welcome page. 
+
+In terminal, execute `sudo chown $USER -R /var/www` it will change the ownership of `/var/www/` to `ubuntu` (its default username assigned to every Ubuntu instance) so you can create and modify files and directories under `/var/www/`.
 
 Note: 0.0.0.0 is your Elastic IP address associated with EC2 instance.
 
@@ -66,12 +64,15 @@ Adobe Commerce requires additional SPL extension, its the part of PHP core so ab
 - `sudo a2enmod proxy_fcgi` - Its required for PHP FPM.
 - `sudo a2enmod http2` - For the complete set of features described by RFC 7540 and supports HTTP/2 over cleartext (http:), as well as secure (https:) connections. The cleartext variant is named `h2c`, the secure one `h2`, [Details](https://httpd.apache.org/docs/2.4/howto/http2.html).
 
-> If you get an error `ERROR: Module version does not exist!` and `apachectl -M | grep version` outputs `version_module (static)` then its mean mod_version is statically compiled into apache2 package and works automatically.
+> If you get an error `ERROR: Module xxx does not exist!` and `apachectl -M | grep version` outputs `xxx_module (static)` then its mean the apache module is statically compiled into apache2 package and works automatically.
 
 **Enable PHP FPM configuration for Apache**
 - `sudo a2enconf php8.1-fpm`
 
+
 PHP is successfully Installed. Complete settings are under `/etc/php/8.1/fpm/php.ini`.
+
+Restart Apache and PHP FPM `sudo service apache2 restart && sudo service php8.1-fpm restart`.
 
 ## Install MySQL
 Ubuntu 22.04.1 LTS (Jammy Jellyfish) is shipped with MySQL 8.0. No need to add any other repository.
@@ -93,7 +94,7 @@ ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password by 'g0oDp@s$
 mysql -u root -p
 ```
 
-Its is strongly recommended that we should not use root user, instead create another user, root user has administrative access to MySQL.
+Its is strongly recommended that we should not use root user, instead create another user, root user has administrative access to MySQL, we are continuing with the root user for now.
 
 ## Install ElasticSearch
 
@@ -113,8 +114,11 @@ sudo systemctl enable elasticsearch
 
 sudo systemctl start elasticsearch
 ```
+
 ## Install Composer
-Ubuntu 22.04 has Composer 2.2 in its upstream repositories.
+
+Ubuntu 22.04.1 LTS (Jammy Jellyfish) is shipped with Composer 2.2.
+
 ```bash
 sudo apt install composer
 ```
@@ -122,6 +126,7 @@ or you may install it from the [official source](https://getcomposer.org/downloa
 
 ## Install n98-magerun2
 The swiss army knife for Magento developers, sysadmins and devops. The tool provides a huge set of well tested command line commands which save hours of work time. All commands are extendable by a module API.
+
 ```bash
 curl -sS -O https://files.magerun.net/n98-magerun2-latest.phar
 
@@ -131,7 +136,6 @@ sudo mv ./n98-magerun2-latest.phar /usr/bin/magerun2
 
 magerun2 --version
 ```
-
 
 ## Install and Configure SendMail
 - `sudo apt install sendmail`
@@ -148,11 +152,13 @@ sudo apt install php-xdebug
 ```
 - Enable stack trace, edit `/etc/php/7.2/mods-available/xdebug.ini` and put `xdebug.show_error_trace = 1`
 - Run `php -m` and confirm that xdebug is under the active PHP extensions list, or run `php -v` and find the following similar output;
+
 ```bash
 PHP xxx
 Copyright (c) xxx
 with Xdebug xxx, Copyright (c) 2002-2018, by Derick Rethans
 ```
+
 ## Bonus: Setup VirtualHost
 Previously we were able to access Apache's welcome page over `http://localhost` it is coming from `/var/www/html/`, I don't want to put my Magento installation under `/var/www/html/magento/` and access it like `http://localhost/magento/` so I will create separate VirtualHost.
 
@@ -165,7 +171,7 @@ cd /var/www/html
 composer create-project --repository-url=https://repo.magento.com/ magento/project-community-edition:2.4.5 .
 ```
 
-Enter Magento Marketplace Public Key as `Username` and Private Key as `Password`. It will take some time to download all depedences. 
+Enter Magento Marketplace Public Key as `Username` and Private Key as `Password`. It will take some time to download all dependencies. 
 
 ```bash
 bin/magento setup:install --base-url=http://0.0.0.0/ --db-host=localhost --db-name=magento --db-user=root --db-password='g0oDp@s$w0Rd' --admin-firstname=admin --admin-lastname=admin --admin-email=admin@admin.com --admin-user=admin --admin-password=admin321 --language=en_US --currency=USD --use-rewrites=1 --search-engine=elasticsearch7 --elasticsearch-host=127.0.0.1 --elasticsearch-port=9200
@@ -176,10 +182,19 @@ Note: 0.0.0.0 is your Elastic IP address associated with EC2 instance.
 After the successful installation; **set up the permissions**;
 
 ```bash
+# file permissions
 sudo find var generated vendor pub/static pub/media app/etc -type f -exec chmod g+w {} +
+
+# folder/directory permissions
 sudo find var generated vendor pub/static pub/media app/etc -type d -exec chmod g+ws {} +
+
+# add current user (ubuntu) to Apache group (www-data).
 sudo usermod -a -G www-data ubuntu
+
+# assign Apache group to all files and directories/folders
 sudo chown -R :www-data .
+
+# set execution permission to magento file located under bin directory
 sudo chmod u+x bin/magento
 ```
 
