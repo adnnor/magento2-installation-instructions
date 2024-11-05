@@ -1,3 +1,21 @@
+# Discontinuation Notice
+
+This repository provides instructions for setting up Magento 2.4.5 using a LAMP stack on an AWS EC2 instance with Ubuntu 22. However, we are discontinuing this repository in favor of transitioning to Docker for improved deployment and management.
+
+## Recommended Transition to Docker
+
+While I haven't yet created a specific Docker setup for Magento, you can use the existing [Oro Docker setup](https://github.com/adnnor/oro-docker) as a temporary solution. To adapt the Oro setup for your Magento instance, simply replace the services in the `docker-compose.yml` file to suit your Magento requirements.
+
+## Next Steps
+
+1. Explore the [Oro Docker repository](https://github.com/adnnor/oro-docker) for guidance on using Docker.
+2. Modify the `docker-compose.yml` file as needed for your Magento services.
+3. Stay tuned for updates on the Magento-specific Docker setup in the future.
+
+Thank you for your understanding!
+
+--- 
+
 ## Magento 2.4.5
 
 We are going to setup the AWS EC2 instance for Magento 2.4.5 using Ubuntu 22. These instruction includes the following features;
